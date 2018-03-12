@@ -24,7 +24,8 @@ into the desired location. For example.
 
 # Requirements
 
-Natural deduction uses d3 and MathJax.
+Natural deduction uses d3 and MathJax. The example webpage uses
+bootstrap for some styling.
 
 # Directions for growth
 

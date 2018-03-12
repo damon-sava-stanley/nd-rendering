@@ -1,10 +1,69 @@
 div#container {
   height: 485px;
-  width: 700px;
+  width: 1000px;
+  margin: 0 50px;
   border:1px dotted #888;
   overflow: scroll;
 }
 
-h1 {
-  font-size: 22px;	
+form {
+  margin: 0 50px;
+}
+
+textarea {
+  width: 1000px;
+  height: 300px;
+}
+
+h1 { font-size: 20pt !important; }
+h2 { font-size: 18pt !important; }
+p,a,ul,li,blockquote { text-align: left; font-size: 14pt !important; }
+div.line-block { text-align: left; font-size: 14pt !important; }
+
+body {
+  background-color: rgb(250, 250, 247);
+  color: rgb(30, 31, 35);
+  font-family: Georgia;
+}
+a:link {
+  color: rgb(42, 46, 61);
+}
+a:visited {
+  color: rgb(40, 30, 31);
+}
+#$idprefix$TOC ul,
+#$idprefix$TOC ul li {
+  list-style-type: none;
+  padding-left: 0px;
+  margin-left: 2px;
+}
+.author {
+  font-size-adjust: 1.25;
+  margin-bottom: 3px;
+  filter: brightness(85%);
+}
+.author {
+  font-size-adjust: 1.5;
+  margin-bottom: 3px;
+  filter: brightness(125%);
+}
+.date {
+  font-size-adjust: 1.5;
+  margin-bottom: 2px;
+  filter: brightness(135%);
+}
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
 }
