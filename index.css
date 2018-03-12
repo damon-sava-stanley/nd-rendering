@@ -1,0 +1,10 @@
+div#container {
+  height: 485px;
+  width: 700px;
+  border:1px dotted #888;
+  overflow: scroll;
+}
+
+h1 {
+  font-size: 22px;	
+}

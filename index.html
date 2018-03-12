@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Natural Deduction Rendering</title>
+  <meta name="author" content="Damon Stanley">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
+  <script type="text/javascript"
+   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js">
+  </script>
+  <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body>
+	<h1>Natural Deduction Rendering</h1>
+	<div id="container">
+		<svg id="nd-svg" role="img">
+		</svg>
+	</div>
+	<form id="nd-text" onSubmit="return handleForm()">
+		<textarea id="nd-json" autofocus="true" name="json" required="true"
+		  cols="97" rows="23">
+		</textarea><br/>
+		<input type="submit" value="Render">
+	</form>
+	<script type="text/javascript" src="index.js"></script>
+</body>
+</html>
