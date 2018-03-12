@@ -141,39 +141,62 @@ function renderNode(parentElement, node) {
 	var conclusionWidth = conclusionBox.width;
 	var conclusionHeight = conclusionBox.height;
 	
-	var leftOffset = left == null ? 0 : left.node().getBBox().width;
+	
 	var childrenWidths = children.map(c => c.node().getBBox().width);
 	var maxWidth = childCount == 0 ? 0 : Math.max.apply(null, childrenWidths);
 	var childrenHeights = children.map(c => c.node().getBBox().height);
 	var maxHeight = childCount == 0 ? 0 : Math.max.apply(null, childrenHeights);
 	
-	var spaceLeft = leftOffset + gutter;
 	var conclusionSpace = childCount <= 1 ? 0 
 	    : (conclusionWidth - maxWidth) / (childCount - 1);
 	var spaceBetween = Math.max(maxWidth + gutter, conclusionSpace);
 	var totalGutterWidth = childCount > 0 ? gutter * (childCount - 1) : 0;
-	var lineWidth = Math.max(maxWidth * childCount + totalGutterWidth, conclusionWidth);
+	var fullWidth = Math.max(maxWidth * childCount + totalGutterWidth, conclusionWidth);
 	
-	var conclusionLeft = spaceLeft + (lineWidth / 2) - conclusionWidth / 2;
+	var conclusionLeft = (fullWidth / 2) - (conclusionWidth / 2);
 	var lineY = maxHeight +  lineHeight(line) + gutter;
 	var conclusionBot = lineY + conclusionHeight;
 	
+	var leftMostChildX = Infinity;
+	if (childCount > 0) {
+		var firstChildNode = children[0].node();
+		var firstChildWidth = firstChildNode.getBBox().width;
+		var firstChildConclusionWidth = firstChildNode.firstChild.getBBox().width;
+		leftMostChildX = ((firstChildWidth - firstChildConclusionWidth) / 2);
+	}
+	var leftMost = Math.min(conclusionLeft, leftMostChildX)
+	
+	var rightMostChildX = -Infinity;
+	if (childCount > 0) {
+		var lastChildNode = children[childCount - 1].node();
+		var lastChildWidth = lastChildNode.getBBox().width;
+		var lastChildConclusionWidth = lastChildNode.firstChild.getBBox().width;
+		rightMostChildX = fullWidth - ((lastChildWidth - lastChildConclusionWidth) / 2);
+	}
+	var rightMost = Math.max(conclusionLeft + conclusionWidth, rightMostChildX);
+	
+	var leftOffset = left == null ? 0 : (left.node().getBBox().width + gutter);
+	var shiftRight = leftMost < leftOffset ? leftOffset - leftMost : 0;
+	
 	// Reposition
 	children.forEach(function (c, i){ 
-		var xOff = spaceLeft + i * spaceBetween;
+		var xOff = shiftRight + i * spaceBetween;
 		var yOff = maxHeight - c.node().getBBox().height;
 		c.attr('transform', 'translate(' +  xOff + ',' + yOff  +')')
 	});
-	placeBetween(line, spaceLeft, lineY, spaceLeft + lineWidth);
+	
+	placeBetween(line, leftMost + shiftRight, lineY, rightMost + shiftRight);
 	conclusion.attr('transform', 
-	  'translate(' + conclusionLeft + ',' + conclusionBot + ')');
+	  'translate(' + (shiftRight+conclusionLeft) + ',' + conclusionBot + ')');
 	if (left != null) {
-		var leftHeight = lineY + (left.node().getBBox().height / 2);
-		left.attr('transform', 'translate('+0+','+leftHeight+')');
+		var leftBox = left.node().getBBox();
+		var leftX = (leftMost + shiftRight) - (leftBox.width + gutter);
+		var leftHeight = lineY + (leftBox.height / 2);
+		left.attr('transform', 'translate('+leftX+','+leftHeight+')');
 	}
 	if (right != null) {
 		var rightHeight = lineY + (right.node().getBBox().height / 2);
-		var x = lineWidth + spaceLeft + gutter;
+		var x = shiftRight + rightMost + gutter;
 		var y = rightHeight;
 		right.attr('transform', 'translate('+x+','+y+')');
 	}
@@ -204,7 +227,7 @@ function ntreeFormula(n, d, formula) {
 	if (d <= 1) return undischargedAssumption(formula);
 	var child = ntreeFormula(n, d - 1, formula);
 	var children = Array(n).fill(child);
-	return node(formula, children, "line", null, null);
+	return node(formula, children, "line", (d-1).toString(), (d-1).toString() + "'");
 }
 
 function main() {
@@ -222,7 +245,7 @@ function main() {
 	
 	var container = document.getElementById("container");
 	
-	var n = ntreeFormula(4, 4, "A");
+	var n = ntreeFormula(2, 4, "A");
 	
 	var jsonTA = document.getElementById("nd-json");
 	jsonTA.value = JSON.stringify(n, null, 2);
