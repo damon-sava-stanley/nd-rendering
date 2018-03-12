@@ -222,8 +222,8 @@ function main() {
 	
 	var container = document.getElementById("container");
 	
-	var n = ntreeFormula(5, 4, "A");
-
+	var n = ntreeFormula(4, 4, "A");
+	
 	var jsonTA = document.getElementById("nd-json");
 	jsonTA.value = JSON.stringify(n, null, 2);
 	  
