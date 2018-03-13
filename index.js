@@ -147,13 +147,14 @@ function renderNode(parentElement, node) {
 	var childrenHeights = children.map(c => c.node().getBBox().height);
 	var maxHeight = childCount == 0 ? 0 : Math.max.apply(null, childrenHeights);
 	var childrenWidth = childrenWidths.reduce((a, b) => a + b, 0);
-	var totalGutterWidth = childCount > 0 ? gutter * (childCount - 1) : 0;
 	var childrenXOff = [];
 	var childXOff = 0;
+	var childGutters = childCount <= 1 ? 0 : Math.max(gutter, (conclusionWidth - childrenWidth) / (childCount - 1));
+	
 	childrenWidths.forEach((w, i) => {
 		childrenXOff.push(childXOff);
 		childXOff += w;
-		if (i < childCount - 1) childXOff += gutter;
+		if (i < childCount - 1) childXOff += childGutters;
 	});
 	
 	var lineY = maxHeight +  lineHeight(line) + gutter;
