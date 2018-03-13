@@ -141,19 +141,21 @@ function renderNode(parentElement, node) {
 	var conclusionWidth = conclusionBox.width;
 	var conclusionHeight = conclusionBox.height;
 	
+	var leftOffset = left == null ? 0 : (left.node().getBBox().width + gutter);
 	
 	var childrenWidths = children.map(c => c.node().getBBox().width);
-	var maxWidth = childCount == 0 ? 0 : Math.max.apply(null, childrenWidths);
 	var childrenHeights = children.map(c => c.node().getBBox().height);
 	var maxHeight = childCount == 0 ? 0 : Math.max.apply(null, childrenHeights);
-	
-	var conclusionSpace = childCount <= 1 ? 0 
-	    : (conclusionWidth - maxWidth) / (childCount - 1);
-	var spaceBetween = Math.max(maxWidth + gutter, conclusionSpace);
+	var childrenWidth = childrenWidths.reduce((a, b) => a + b, 0);
 	var totalGutterWidth = childCount > 0 ? gutter * (childCount - 1) : 0;
-	var fullWidth = Math.max(maxWidth * childCount + totalGutterWidth, conclusionWidth);
+	var childrenXOff = [];
+	var childXOff = 0;
+	childrenWidths.forEach((w, i) => {
+		childrenXOff.push(childXOff);
+		childXOff += w;
+		if (i < childCount - 1) childXOff += gutter;
+	});
 	
-	var conclusionLeft = (fullWidth / 2) - (conclusionWidth / 2);
 	var lineY = maxHeight +  lineHeight(line) + gutter;
 	var conclusionBot = lineY + conclusionHeight;
 	
@@ -162,25 +164,28 @@ function renderNode(parentElement, node) {
 		var firstChildNode = children[0].node();
 		var firstChildWidth = firstChildNode.getBBox().width;
 		var firstChildConclusionWidth = firstChildNode.firstChild.getBBox().width;
-		leftMostChildX = ((firstChildWidth - firstChildConclusionWidth) / 2);
+		leftMostChildX = (firstChildWidth - firstChildConclusionWidth) / 2;
 	}
-	var leftMost = Math.min(conclusionLeft, leftMostChildX)
 	
 	var rightMostChildX = -Infinity;
 	if (childCount > 0) {
 		var lastChildNode = children[childCount - 1].node();
 		var lastChildWidth = lastChildNode.getBBox().width;
 		var lastChildConclusionWidth = lastChildNode.firstChild.getBBox().width;
-		rightMostChildX = fullWidth - ((lastChildWidth - lastChildConclusionWidth) / 2);
+		rightMostChildX = childXOff - ((lastChildWidth - lastChildConclusionWidth) / 2);
 	}
-	var rightMost = Math.max(conclusionLeft + conclusionWidth, rightMostChildX);
+	var midpoint = childCount == 0 ? conclusionWidth / 2 : (leftMostChildX + rightMostChildX) / 2;
 	
-	var leftOffset = left == null ? 0 : (left.node().getBBox().width + gutter);
+	var conclusionLeft = midpoint - (conclusionWidth / 2);
+	var conclusionRight = midpoint + (conclusionWidth / 2);
+	
+	var leftMost = Math.min(conclusionLeft, leftMostChildX);
 	var shiftRight = leftMost < leftOffset ? leftOffset - leftMost : 0;
+	var rightMost = Math.max(conclusionRight, rightMostChildX);
 	
 	// Reposition
-	children.forEach(function (c, i){ 
-		var xOff = shiftRight + i * spaceBetween;
+	children.forEach((c, i) => { 
+		var xOff = childrenXOff[i] + shiftRight;
 		var yOff = maxHeight - c.node().getBBox().height;
 		c.attr('transform', 'translate(' +  xOff + ',' + yOff  +')')
 	});
@@ -245,7 +250,7 @@ function main() {
 	
 	var container = document.getElementById("container");
 	
-	var n = ntreeFormula(2, 4, "A");
+	var n = ntreeFormula(2, 3, "A");
 	
 	var jsonTA = document.getElementById("nd-json");
 	jsonTA.value = JSON.stringify(n, null, 2);
